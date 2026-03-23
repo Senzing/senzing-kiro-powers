@@ -3,8 +3,10 @@
   "language": "en",
   "words": [
     "CCLA",
+    "Codegen",
     "CODEOWNER",
     "cooldown",
+    "firewalled",
     "frontmatter",
     "ICLA",
     "kernelsam",
@@ -14,6 +16,7 @@
     "OFAC",
     "psutil",
     "pytest",
+    "quickstarts",
     "SENZ",
     "Senzing",
     "venv",
