@@ -13,6 +13,7 @@
     "OFAC",
     "psutil",
     "pytest",
+    "SENZ",
     "Senzing",
     "venv",
     "Watchlist"
