@@ -2,17 +2,11 @@
 """
 Senzing Power Validation Script
 
-This script validates the Senzing Kiro Power structure, including:
-- File existence checks
-- Internal link validation
-- Metadata validation
-- Frontmatter parsing
-- Steering file completeness
+Validates the Senzing Kiro Power structure for the lightweight MCP activation layer design.
 
 Usage:
     python validate_power.py
     python validate_power.py --verbose
-    python validate_power.py --fix-links
 """
 
 import os
@@ -21,7 +15,7 @@ import sys
 import json
 import argparse
 from pathlib import Path
-from typing import List, Dict, Tuple, Set
+from typing import List, Dict
 
 class PowerValidator:
     """Validate Senzing Power structure and content"""
@@ -63,26 +57,9 @@ class PowerValidator:
             "steering"
         ]
         
+        # Minimal steering structure - just one guide on using the MCP server
         required_steering_files = [
-            "steering/steering.md",
-            "steering/getting-started.md",
-            "steering/quick-reference.md",
-            "steering/best-practices.md",
-            "steering/performance.md",
-            "steering/troubleshooting.md",
-            "steering/examples.md",
-            "steering/use-cases.md",
-            "steering/security-compliance.md",
-            "steering/advanced-topics.md",
-            "steering/monitoring.md",
-            "steering/data-sources.md",
-            "steering/cicd.md",
-            "steering/faq.md",
-            "steering/community.md",
-            "steering/reference.md",
-            "steering/config-examples.md",
-            "steering/smoke-test.md",
-            "steering/offline-mode.md"
+            "steering/using-senzing-mcp.md"
         ]
         
         all_valid = True
@@ -138,24 +115,21 @@ class PowerValidator:
         
         frontmatter = frontmatter_match.group(1)
         
+        # Valid Power-Builder fields (as of 2.0.0)
+        valid_fields = [
+            "name",
+            "displayName",
+            "description",
+            "keywords",
+            "author"
+        ]
+        
         # Required fields
         required_fields = [
             "name",
             "displayName",
-            "version",
             "description",
             "author"
-        ]
-        
-        # Recommended fields
-        recommended_fields = [
-            "keywords",
-            "homepage",
-            "license",
-            "category",
-            "maturity",
-            "support_url",
-            "last_updated"
         ]
         
         all_valid = True
@@ -169,44 +143,29 @@ class PowerValidator:
             else:
                 self.log("INFO", f"Found required field: {field}")
         
-        # Check recommended fields
-        for field in recommended_fields:
-            pattern = f'^{field}:'
-            if not re.search(pattern, frontmatter, re.MULTILINE):
-                self.log("WARNING", f"Recommended metadata field missing: {field}")
-            else:
-                self.log("INFO", f"Found recommended field: {field}")
+        # Check for invalid fields (fields not in valid_fields list)
+        for line in frontmatter.split('\n'):
+            if ':' in line:
+                field = line.split(':')[0].strip()
+                if field and field not in valid_fields:
+                    self.log("WARNING", f"Invalid metadata field (not in Power-Builder spec): {field}")
         
-        # Validate version format (semantic versioning)
-        version_match = re.search(r'^version:\s*"?([^"\n]+)"?', frontmatter, re.MULTILINE)
-        if version_match:
-            version = version_match.group(1)
-            if not re.match(r'^\d+\.\d+\.\d+', version):
-                self.log("WARNING", f"Version '{version}' doesn't follow semantic versioning (MAJOR.MINOR.PATCH)")
-        
-        # Validate maturity value
-        maturity_match = re.search(r'^maturity:\s*"?([^"\n]+)"?', frontmatter, re.MULTILINE)
-        if maturity_match:
-            maturity = maturity_match.group(1)
-            valid_maturity = ["alpha", "beta", "stable"]
-            if maturity not in valid_maturity:
-                self.log("WARNING", f"Maturity '{maturity}' not in {valid_maturity}")
-        
-        # Validate URLs
-        url_fields = ["homepage", "repository", "support_url", "documentation_url", "mcp_server_url"]
-        for field in url_fields:
-            url_match = re.search(f'^{field}:\\s*"?([^"\n]+)"?', frontmatter, re.MULTILINE)
-            if url_match:
-                url = url_match.group(1)
-                if not url.startswith(("http://", "https://")):
-                    self.log("WARNING", f"{field} '{url}' should be a valid HTTP(S) URL")
+        # Validate keywords (should be array)
+        keywords_match = re.search(r'^keywords:\s*\[(.*?)\]', frontmatter, re.MULTILINE)
+        if keywords_match:
+            keywords_str = keywords_match.group(1)
+            keywords = [k.strip().strip('"') for k in keywords_str.split(',')]
+            self.log("INFO", f"Found {len(keywords)} keywords")
+            
+            if len(keywords) > 10:
+                self.log("WARNING", f"Too many keywords ({len(keywords)}). Recommend 5-7 specific terms.")
         
         if all_valid:
             self.log("SUCCESS", "Metadata validation passed")
         
         return all_valid
     
-    def validate_internal_links(self, fix: bool = False) -> bool:
+    def validate_internal_links(self) -> bool:
         """Validate internal links in markdown files"""
         self.log("INFO", "Validating internal links...")
         
@@ -274,7 +233,8 @@ class PowerValidator:
             servers = config["mcpServers"]
             
             if "senzing-mcp-server" not in servers:
-                self.log("WARNING", "mcp.json missing 'senzing-mcp-server' configuration")
+                self.log("ERROR", "mcp.json missing 'senzing-mcp-server' configuration")
+                all_valid = False
             else:
                 server_config = servers["senzing-mcp-server"]
                 
@@ -282,62 +242,68 @@ class PowerValidator:
                 if "url" not in server_config:
                     self.log("ERROR", "senzing-mcp-server missing 'url' field")
                     all_valid = False
+                else:
+                    url = server_config["url"]
+                    if not url.startswith("https://"):
+                        self.log("WARNING", f"MCP server URL should use HTTPS: {url}")
+                    self.log("INFO", f"MCP server URL: {url}")
                 
-                # Check optional but recommended fields
-                if "disabled" not in server_config:
-                    self.log("INFO", "senzing-mcp-server missing 'disabled' field (optional)")
+                # Check disabled field
+                if "disabled" in server_config:
+                    if server_config["disabled"]:
+                        self.log("WARNING", "MCP server is disabled")
                 
-                if "timeout" not in server_config:
-                    self.log("INFO", "senzing-mcp-server missing 'timeout' field (optional)")
+                # Check timeout
+                if "timeout" in server_config:
+                    timeout = server_config["timeout"]
+                    if timeout < 30000:
+                        self.log("WARNING", f"Timeout ({timeout}ms) may be too short for MCP operations")
         
         if all_valid:
             self.log("SUCCESS", "mcp.json validation passed")
         
         return all_valid
     
-    def validate_steering_completeness(self) -> bool:
-        """Validate that steering files are complete and cross-referenced"""
-        self.log("INFO", "Validating steering file completeness...")
+    def validate_power_philosophy(self) -> bool:
+        """Validate that the power follows the lightweight activation layer philosophy"""
+        self.log("INFO", "Validating power philosophy (lightweight design)...")
         
-        steering_md = self.power_dir / "steering" / "steering.md"
-        if not steering_md.exists():
-            self.log("ERROR", "steering/steering.md not found")
+        power_md = self.power_dir / "POWER.md"
+        if not power_md.exists():
             return False
         
-        content = steering_md.read_text()
-        
-        # Expected steering files
-        expected_files = [
-            "getting-started.md",
-            "quick-reference.md",
-            "best-practices.md",
-            "performance.md",
-            "troubleshooting.md",
-            "examples.md",
-            "use-cases.md",
-            "security-compliance.md",
-            "advanced-topics.md",
-            "monitoring.md",
-            "data-sources.md",
-            "cicd.md",
-            "faq.md",
-            "community.md",
-            "reference.md",
-            "config-examples.md",
-            "smoke-test.md",
-            "offline-mode.md"
-        ]
+        content = power_md.read_text()
+        lines = len(content.split('\n'))
         
         all_valid = True
         
-        # Check that each file is referenced in steering.md
-        for file in expected_files:
-            if file not in content:
-                self.log("WARNING", f"steering.md doesn't reference {file}")
-                all_valid = False
+        # POWER.md should be concise (< 200 lines for activation layer)
+        if lines > 200:
+            self.log("WARNING", f"POWER.md is {lines} lines. Consider if content should be in MCP server instead.")
+        else:
+            self.log("INFO", f"POWER.md is {lines} lines (good for activation layer)")
+        
+        # Should mention get_capabilities
+        if "get_capabilities" not in content:
+            self.log("WARNING", "POWER.md should mention calling get_capabilities first")
+            all_valid = False
+        
+        # Should reference MCP server
+        if "MCP" not in content and "mcp" not in content:
+            self.log("WARNING", "POWER.md should reference the MCP server")
+            all_valid = False
+        
+        # Check steering directory
+        steering_dir = self.power_dir / "steering"
+        if steering_dir.exists():
+            steering_files = list(steering_dir.glob("*.md"))
+            if len(steering_files) > 3:
+                self.log("WARNING", f"Found {len(steering_files)} steering files. Consider if content should be in MCP server instead.")
+            else:
+                self.log("INFO", f"Found {len(steering_files)} steering files (minimal design)")
         
         if all_valid:
-            self.log("SUCCESS", "Steering file completeness validation passed")
+            self.log("SUCCESS", "Power philosophy validation passed")
         
         return all_valid
     
@@ -345,14 +311,16 @@ class PowerValidator:
         """Check for unusually large files"""
         self.log("INFO", "Checking file sizes...")
         
-        max_size_kb = 500  # 500 KB warning threshold
+        max_size_kb = 100  # 100 KB warning threshold for activation layer
         
         md_files = list(self.power_dir.glob("**/*.md"))
         
         for md_file in md_files:
             size_kb = md_file.stat().st_size / 1024
             if size_kb > max_size_kb:
-                self.log("WARNING", f"Large file: {md_file.relative_to(self.power_dir)} ({size_kb:.1f} KB)")
+                self.log("WARNING", f"Large file: {md_file.relative_to(self.power_dir)} ({size_kb:.1f} KB) - consider if content belongs in MCP server")
+            else:
+                self.log("INFO", f"{md_file.relative_to(self.power_dir)}: {size_kb:.1f} KB")
         
         self.log("SUCCESS", "File size check complete")
         return True
@@ -368,10 +336,10 @@ class PowerValidator:
             "info_details": self.info if self.verbose else []
         }
     
-    def run_all_validations(self, fix_links: bool = False) -> bool:
+    def run_all_validations(self) -> bool:
         """Run all validation checks"""
         print("\n" + "="*60)
-        print("Senzing Power Validation")
+        print("Senzing Power Validation (v2.0 - Lightweight Design)")
         print("="*60 + "\n")
         
         results = []
@@ -379,8 +347,8 @@ class PowerValidator:
         results.append(self.validate_file_structure())
         results.append(self.validate_metadata())
         results.append(self.validate_mcp_config())
-        results.append(self.validate_internal_links(fix=fix_links))
-        results.append(self.validate_steering_completeness())
+        results.append(self.validate_internal_links())
+        results.append(self.validate_power_philosophy())
         results.append(self.check_file_sizes())
         
         print("\n" + "="*60)
@@ -394,7 +362,7 @@ class PowerValidator:
         print(f"ℹ️  Info: {report['info']}")
         
         if report['errors'] == 0 and report['warnings'] == 0:
-            print("\n🎉 All validations passed! Power is ready for production.")
+            print("\n🎉 All validations passed! Power follows lightweight activation layer design.")
             return True
         elif report['errors'] == 0:
             print(f"\n✅ No errors found, but {report['warnings']} warnings to review.")
@@ -404,15 +372,16 @@ class PowerValidator:
             return False
 
 def main():
-    parser = argparse.ArgumentParser(description="Validate Senzing Kiro Power")
+    parser = argparse.ArgumentParser(
+        description="Validate Senzing Kiro Power (v2.0 - Lightweight Activation Layer)"
+    )
     parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
-    parser.add_argument("--fix-links", action="store_true", help="Attempt to fix broken links")
     parser.add_argument("--dir", default=".", help="Power directory (default: current directory)")
     
     args = parser.parse_args()
     
     validator = PowerValidator(power_dir=args.dir, verbose=args.verbose)
-    success = validator.run_all_validations(fix_links=args.fix_links)
+    success = validator.run_all_validations()
     
     sys.exit(0 if success else 1)
 
