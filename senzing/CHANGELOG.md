@@ -2,80 +2,81 @@
 
 All notable changes to the Senzing Kiro Power will be documented in this file.
 
-## [2.0.0] - 2026-03-23
+## [1.1.0] - 2026-03-23
 
-### Changed - BREAKING
+### Changed
 
-**Complete redesign**: Transformed from documentation repository to lightweight MCP activation layer.
+**Redesigned as lightweight MCP activation layer**: Transformed from documentation repository to a focused power that delegates to the MCP server.
 
-**Philosophy shift**: The power now delegates to the MCP server instead of duplicating its content.
-
-- **POWER.md**: Reduced from 429 lines to ~100 lines
+- **POWER.md**: Streamlined to 120 lines (from 429 lines)
   - Removed duplicate documentation that exists in MCP server
-  - Now focuses on quick start and directing users to MCP tools
-  - Added clear "call get_capabilities first" guidance
-  - Simplified to essential information only
+  - Focuses on quick start and directing users to MCP tools
+  - Clear "call get_capabilities first" guidance
+  - Essential information only: what Senzing does, common tasks, prerequisites
 
-- **Steering files**: Reduced from 19 files to 1 focused guide
-  - Removed: 18 redundant guides (getting-started, quick-reference, best-practices, performance, troubleshooting, examples, use-cases, security-compliance, advanced-topics, monitoring, data-sources, cicd, faq, community, reference, config-examples, smoke-test, offline-mode, steering)
-  - Added: `using-senzing-mcp.md` - Single guide on how to work with the MCP server effectively
-  - New guide teaches tool selection, workflows, anti-patterns, and response patterns
+- **Steering files**: Consolidated to 1 focused guide (from 19 files)
+  - Single guide: `using-senzing-mcp.md` - How to work with the MCP server effectively
+  - Teaches tool selection, workflows, anti-patterns, and response patterns
+  - Removed 18 redundant guides that duplicated MCP server content
 
-### Why This Change?
+- **Validation**: Updated `validate_power.py` to v1.1 standards
+  - Validates lightweight activation layer design
+  - Checks file sizes to prevent documentation bloat
+  - Ensures power philosophy compliance
 
-**Problem**: The original power duplicated 10,000+ lines of documentation that already exists in the MCP server, creating:
-- Maintenance burden (two sources of truth)
-- Sync issues (power docs could become stale)
-- Confusion (which source is authoritative?)
-- Bloat (unnecessary duplication)
+### Design Philosophy
 
-**Solution**: A Kiro power should be a thin activation layer that:
-- Configures MCP server connection
-- Provides quick start guidance
-- Teaches users how to use MCP tools effectively
-- Delegates all documentation/examples/guidance to the MCP server
+This power follows the correct pattern for MCP integration:
 
-**Result**: 
-- Power is now ~95% smaller
-- Single source of truth (MCP server)
-- Always current (MCP server is authoritative)
-- Easier to maintain
-- Clearer purpose
+- **Thin activation layer**: Configures MCP connection and provides quick start
+- **Delegates to MCP server**: All documentation, examples, and guidance come from authoritative source
+- **Single source of truth**: MCP server is always current and authoritative
+- **Minimal maintenance**: No documentation synchronization needed
 
-### What Users Should Do
+### Benefits
 
-Instead of reading power documentation, users should:
+- 98% reduction in documentation size (~10,000 lines → ~200 lines)
+- Always current information (from MCP server)
+- No sync issues between power and MCP server
+- Clearer purpose and easier maintenance
+- Better user experience with authoritative responses
 
-1. **Start with**: `get_capabilities(version="current")`
-2. **Search docs**: `search_docs(query="your question", version="current")`
-3. **Find examples**: `find_examples(query="your use case")`
-4. **Generate code**: `generate_scaffold(language="python", workflow="full_pipeline", version="current")`
-5. **Get help**: All 14 MCP tools provide comprehensive guidance
+### User Guide
+
+Start with the MCP server tools:
+
+1. **Discover capabilities**: `get_capabilities(version="current")`
+2. **Search documentation**: `search_docs(query="your question", version="current")`
+3. **Find code examples**: `find_examples(query="your use case")`
+4. **Generate SDK code**: `generate_scaffold(language="python", workflow="full_pipeline", version="current")`
+5. **Map data**: `mapping_workflow(action="start", file_paths=["data.csv"], version="current")`
+
+All 14 MCP tools provide comprehensive, up-to-date guidance.
 
 ### Migration from 1.0.0
 
-If you were using the steering files for reference:
-- All that content is available via MCP tools
+The extensive steering files from v1.0.0 are no longer needed:
+- All content is available via MCP tools
 - Call `get_capabilities` to see what's available
 - Use `search_docs` to find specific topics
-- Use `find_examples` for code samples
+- Use `find_examples` for working code samples
 
 ## [1.0.0] - 2026-03-22
 
 ### Added
 
-Initial release with comprehensive documentation (now superseded by 2.0.0 redesign).
+Initial release with comprehensive documentation (now superseded by 1.1.0 redesign).
 
 - POWER.md with 429 lines of documentation
 - 19 steering guides with 10,000+ lines of content
 - mcp.json configuration
 - validate_power.py validation script
 
-**Note**: This approach was redesigned in 2.0.0 to avoid duplicating MCP server content.
+**Note**: This approach was redesigned in 1.1.0 to avoid duplicating MCP server content.
 
 ## Version Philosophy
 
-**2.0.0+**: Lightweight activation layer - delegates to MCP server
+**1.1.0+**: Lightweight activation layer - delegates to MCP server
 **1.0.0**: Documentation repository - duplicated MCP server content (deprecated approach)
 
 ## Links
