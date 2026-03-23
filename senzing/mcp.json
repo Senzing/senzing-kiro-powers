@@ -1,13 +1,7 @@
 {
   "mcpServers": {
-    "senzing-mcp-server": {
-      "url": "https://mcp.senzing.com/mcp",
-      "disabled": false,
-      "autoApprove": [],
-      "timeout": 60000,
-      "env": {
-        "SENZING_MCP_LOG_LEVEL": "INFO"
-      }
+    "senzing": {
+      "url": "https://mcp.senzing.com/mcp"
     }
   }
 }
