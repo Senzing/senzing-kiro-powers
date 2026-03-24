@@ -267,6 +267,7 @@ User: "I'm getting SENZ7234 when loading records"
 
 For technical support, questions, or to report issues with this power,
 please [contact our support team](https://senzing.zendesk.com/hc/en-us/requests/new).
+Support from Senzing is always free.
 
 For API-related questions and developer resources, visit our [Developer Documentation](https://www.senzing.com/docs/).
 
