@@ -102,6 +102,7 @@ This is the most common workflow:
 6. If scripts fail to download, use `download_resource`
 
 **Tips:**
+
 - The workflow generates a mapper script — run it locally to produce JSONL
 - Profile step: read the source data yourself or run the profiler script
 - Plan step: identify master entities vs. child records vs. relationships
@@ -252,3 +253,30 @@ User: "I'm getting SENZ7234 when loading records"
 → Present causes and resolution steps
 → Use search_docs if additional context is needed
 ```
+
+---
+
+## Privacy & Support
+
+### Privacy Policies
+
+- Senzing [Privacy Notice](https://senzing.com/privacy-notice/)
+- Senzing MCP server [Privacy Policy](https://mcp.senzing.com/privacy)
+
+### Support
+
+For technical support, questions, or to report issues with this power,
+please [contact our support team](https://senzing.zendesk.com/hc/en-us/requests/new).
+
+For API-related questions and developer resources, visit our [Developer Documentation](https://www.senzing.com/docs/).
+
+### License
+
+- Request [Non-Production License](https://senzing.com/request-non-prod-license/)
+- Senzing SDK [End User License Agreement (EULA)](https://senzing.com/end-user-license-agreement/)
+
+### Service Information
+
+This power connects to the [Senzing MCP service](https://mcp.senzing.com/),
+which provides access to Senzing's SDK documentation and developer resources.
+The service is hosted and maintained by senzing.com.
