@@ -270,13 +270,12 @@ For API-related questions and developer resources, visit our [Developer Document
 
 ### License
 
-- Request [Non-Production License](https://senzing.com/request-non-prod-license/)
+- Kiro Power licensed as Apache-2.0
 - Senzing SDK [End User License Agreement (EULA)](https://senzing.com/end-user-license-agreement/)
+- Request [Non-Production License](https://senzing.com/request-non-prod-license/)
 
 ### Service Information
 
 This power connects to the [Senzing MCP service](https://mcp.senzing.com/),
 which provides access to Senzing's SDK documentation and developer resources.
 The service is hosted and maintained by senzing.com.
-
-This power integrates with [`mcp.senzing.com/mcp`](https://mcp.senzing.com/mcp) | Apache-2.0 license.
