@@ -1,7 +1,7 @@
 ---
 name: "senzing"
 displayName: "Senzing"
-description: "Resolve entities, deduplicate records, and match identities with Senzing -- includes data mapping, SDK scaffolding, and deployment guidance."
+description: "Add entity resolution to your project with Senzing. This power connects the Senzing MCP server for data mapping, SDK setup, code generation, and deployment guidance."
 keywords:
   [
     "senzing",
@@ -13,9 +13,6 @@ keywords:
     "fuzzy-matching",
   ]
 author: "Senzing"
-version: "1.0.0"
-license: "Apache-2.0"
-compatibility: "Requires Senzing MCP server (https://mcp.senzing.com/mcp) configured via mcp.json"
 ---
 
 # Senzing Entity Resolution — Kiro Power
@@ -281,3 +278,5 @@ For API-related questions and developer resources, visit our [Developer Document
 This power connects to the [Senzing MCP service](https://mcp.senzing.com/),
 which provides access to Senzing's SDK documentation and developer resources.
 The service is hosted and maintained by senzing.com.
+
+This power integrates with [`mcp.senzing.com/mcp`](https://mcp.senzing.com/mcp) | Apache-2.0 license.
