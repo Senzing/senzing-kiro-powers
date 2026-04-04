@@ -14,7 +14,7 @@ Get started with Senzing entity resolution in Kiro in minutes.
 
 Ask Kiro:
 
-```
+```text
 Check if the Senzing power is working
 ```
 
@@ -24,7 +24,7 @@ Kiro will call `get_capabilities` to verify the MCP server connection.
 
 Ask Kiro:
 
-```
+```text
 What is Senzing and how does entity resolution work?
 ```
 
@@ -32,7 +32,7 @@ What is Senzing and how does entity resolution work?
 
 Ask Kiro:
 
-```
+```text
 Show me sample data from the las-vegas CORD dataset
 ```
 
@@ -40,7 +40,7 @@ Show me sample data from the las-vegas CORD dataset
 
 ### Map Your Data
 
-```
+```text
 I have a CSV file at /path/to/customers.csv that I need to map to Senzing format
 ```
 
@@ -48,7 +48,7 @@ Kiro will guide you through the interactive mapping workflow.
 
 ### Install Senzing SDK
 
-```
+```text
 Help me install the Senzing SDK on [your platform]
 ```
 
@@ -56,7 +56,7 @@ Replace `[your platform]` with: Ubuntu, CentOS, macOS, Windows, or Docker.
 
 ### Generate Code
 
-```
+```text
 Generate Python code to load records into Senzing
 ```
 
@@ -64,7 +64,7 @@ Kiro will create working SDK code from real examples.
 
 ### Troubleshoot Errors
 
-```
+```text
 I'm getting error SENZ1234 when loading records
 ```
 
@@ -72,7 +72,7 @@ Kiro will explain the error and provide resolution steps.
 
 ### Build Reports
 
-```
+```text
 How do I export entity resolution results and build analytics reports?
 ```
 
@@ -96,7 +96,7 @@ Kiro will provide SQL queries, data mart schemas, and visualization guidance.
 
 ## Next Steps
 
-- Read [senzing/POWER.md](senzing/POWER.md) for detailed workflows
+- Read [senzing/POWER.md](../senzing/POWER.md) for detailed workflows
 - Explore the 14 MCP tools available
 - Try the CORD sample datasets
 - Generate SDK code in your preferred language
@@ -105,12 +105,12 @@ Kiro will provide SQL queries, data mart schemas, and visualization guidance.
 
 Ask Kiro to search the documentation:
 
-```
+```text
 Search Senzing docs for [your topic]
 ```
 
 Or submit feedback through the power:
 
-```
+```text
 Submit feedback about the Senzing MCP server
 ```
