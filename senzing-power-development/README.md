@@ -62,7 +62,7 @@ attributes across data sources — without training data or manual rules.
 
 ### Map a CSV file
 
-```
+```text
 "I have a customer CSV at /data/customers.csv I need to load into Senzing"
 ```
 
@@ -70,7 +70,7 @@ The agent will guide you through the interactive mapping workflow, validate the 
 
 ### Set up Senzing SDK
 
-```
+```text
 "Help me install and set up the Senzing SDK on Ubuntu"
 ```
 
@@ -78,7 +78,7 @@ The agent will provide platform-specific install commands and configuration code
 
 ### Generate integration code
 
-```
+```text
 "Write me Python code to initialize Senzing and load records"
 ```
 
@@ -86,7 +86,7 @@ The agent will generate working SDK code from real GitHub examples.
 
 ### Debug an error
 
-```
+```text
 "I'm getting SENZ7234 when loading records"
 ```
 
