@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The changelog format is based on [Keep a Changelog] and [CommonMark].
 This project adheres to [Semantic Versioning].
 
+## [1.0.1] - 2026-06-09
+
+### Changed in 1.0.1
+
+- Synced POWER.md with the public Senzing MCP server (v1.24.0): 13 tools (was 14)
+- Removed the retired `lint_record` tool; its validation now lives in `analyze_record`
+- Updated `find_examples` repo count to 37, `sdk_guide`/`generate_scaffold` to 5 languages
+- Clarified official (Python, Java, C#) vs community (Rust, TypeScript/Node.js) SDKs
+- Added the `evaluation` topic to `reporting_guide`
+- Documented the required `workspace_dir` parameter for `mapping_workflow` and `analyze_record`
+- Noted the platform-layer access caveat for `get_sample_data` record retrieval
+
 ## [1.0.0] - 2026-03-23
 
 ### Added to 1.0.0
