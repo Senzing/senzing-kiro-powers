@@ -63,34 +63,34 @@ methods rather than outdated patterns from training data.
 
 ## Tool Reference
 
-The Senzing MCP server provides 14 tools across 6 categories. Start any Senzing
-session by calling `get_capabilities` for an up-to-date tool listing.
+The Senzing MCP server provides 13 tools, grouped below by function. Start any
+Senzing session by calling `get_capabilities` for an up-to-date tool listing —
+the count and names below reflect server v1.24.0 and may change.
 
-### Data Mapping (4 tools)
+### Data Mapping (3 tools)
 
-- **mapping_workflow** — Interactive 8-step workflow: profile source data → plan entities → map fields → generate code → detect SDK → load test → validate → evaluate. State is client-side — always pass state back verbatim.
-- **lint_record** — Returns a Python linter script to validate mapped Senzing JSON/JSONL files locally. No data leaves the client.
-- **analyze_record** — Returns a Python analyzer script to examine feature distribution, attribute coverage, and data quality locally.
-- **download_resource** — Fallback for fetching workflow resources (linter, analyzer, entity spec, mapping examples) when network restrictions block direct download.
+- **mapping_workflow** — Interactive 8-step workflow. Steps 1–4 (core): profile source data → plan entities → map fields → generate sample JSON, mapper code, and QA validation. Steps 5–8 (optional sandbox): detect SDK → load test data into a fresh SQLite DB → generate validation report → evaluate. State is client-side — always pass state back verbatim. **Required on `action='start'`:** pass `workspace_dir` inside the `data` object (a writable directory for scripts and outputs).
+- **analyze_record** — Returns a Python analyzer script to examine feature distribution, attribute coverage, and data quality, and to validate records against the Entity Specification — all locally. Requires a `workspace_dir` parameter. No source data is sent to the server.
+- **download_resource** — Fallback for fetching workflow resources (analyzer script, entity spec, mapping examples) when network restrictions block direct download. Supports batch retrieval via `filenames`.
 
 ### Documentation & Reference (3 tools)
 
 - **search_docs** — Full-text search across entity specification, SDK guides, quickstarts, database tuning, pricing, architecture, globalization, EDA/data analysis, engine configuration, error codes, release notes, and PoC methodology. **Prefer this over web search for any Senzing question.** Use `category='anti_patterns'` to check for known pitfalls.
 - **get_sdk_reference** — Authoritative SDK reference: method signatures, flags, response schemas, V3→V4 migration mappings. Topics: `migration`, `flags`, `response_schemas`, `functions`/`methods`/`classes`/`api`, `all`.
-- **find_examples** — Search 27+ indexed GitHub repos for working code (Python, Java, C#, Rust, TypeScript/Node.js). Three modes: search by query, list files in a repo, or retrieve a specific file.
+- **find_examples** — Search 37 indexed GitHub repos for working code (Python, Java, C# from official SDKs; Rust, TypeScript/Node.js from community wrappers). Three modes: search by query, list files in a repo, or retrieve a specific file.
 
 ### SDK Setup & Code Generation (2 tools)
 
-- **sdk_guide** — Guided SDK setup across 5 platforms (Linux apt/yum, macOS, Windows, Docker) and 4 languages. Covers install, configure, load, export, full_pipeline with decision trees, anti-patterns, and direct package download links for firewalled environments.
-- **generate_scaffold** — Generates SDK scaffold code from real indexed GitHub snippets with source URLs for provenance. 10 workflows (initialize, configure, add_records, delete, query, redo, stewardship, information, error_handling, full_pipeline) in Python, Java, C#, Rust, or TypeScript/Node.js.
+- **sdk_guide** — Guided SDK setup across 5 platforms (Linux apt, Linux yum, macOS, Windows, Docker) and 5 languages (Python, Java, C# official; Rust, TypeScript/Node.js community). Topics: install, configure, load, export, redo, initialize, search, stewardship, delete, information, error_handling, full_pipeline — with decision trees, anti-patterns, and direct package download links for firewalled environments.
+- **generate_scaffold** — Generates SDK scaffold code from real indexed GitHub snippets with source URLs for provenance. 10 workflows (initialize, configure, add_records, delete, query, redo, stewardship, information, error_handling, full_pipeline) in Python, Java, C# (official V4); Rust, TypeScript/Node.js (community); or Python V3.
 
 ### Sample Data (1 tool)
 
-- **get_sample_data** — Real data from CORD (Collections Of Relatable Data): las-vegas (US, 11 sources), london (international, 5 sources), moscow (Cyrillic, 6 sources). Use `dataset='list'` to discover available sets. Always present the `download_url` to the user.
+- **get_sample_data** — Real data from CORD (Collections Of Relatable Data): las-vegas (US, 11 sources), london (international, 5 sources), moscow (Cyrillic, 6 sources). Always present the `download_url` to the user. Note: when reached via the Anthropic public Connectors Directory, record retrieval may be filtered at the platform layer (a `Denied.` response) — full record access requires calling the MCP endpoint directly or using a private deployment.
 
 ### Reporting & Visualization (1 tool)
 
-- **reporting_guide** — Guided reporting and visualization for entity resolution results. Provides SDK patterns for data extraction (5 languages), SQL analytics queries for aggregate reports, data mart schema (SQLite/PostgreSQL), visualization concepts, and anti-patterns. Topics: `export`, `reports`, `entity_views`, `data_mart`, `dashboard`, `graph`, `quality`.
+- **reporting_guide** — Guided reporting and visualization for entity resolution results. Provides SDK patterns for data extraction (5 languages), SQL analytics queries for aggregate reports, data mart schema (SQLite/PostgreSQL), visualization concepts, and anti-patterns. Topics: `export`, `reports`, `entity_views`, `data_mart`, `dashboard`, `graph`, `quality`, `evaluation`.
 
 ### Troubleshooting (1 tool)
 
@@ -109,12 +109,11 @@ These show how to chain MCP tools for common goals. Tool names come from `get_ca
 
 This is the most common workflow:
 
-1. Call `mapping_workflow` with `action='start'` and the source file paths
+1. Call `mapping_workflow` with `action='start'`, the source file paths, and a `workspace_dir`
 2. Walk through each step: Profile → Plan → Map → Codegen → Detect SDK → Load Test → Validate → Evaluate
 3. At each step, pass the `state` object from the previous response verbatim
-4. After codegen, use `lint_record` to validate the output JSON
-5. Use `analyze_record` to check feature distribution and coverage
-6. If scripts fail to download, use `download_resource`
+4. After codegen, use `analyze_record` to validate the output against the Entity Specification and check feature distribution and coverage
+5. If scripts fail to download, use `download_resource`
 
 **Tips:**
 
@@ -188,7 +187,7 @@ Before recommending installation, architecture, or deployment approaches:
 
 **Evaluate**: `get_capabilities` → `get_sample_data` → `sdk_guide(topic="full_pipeline")` → `generate_scaffold(workflow="full_pipeline")` → load → query
 
-**Map data**: `mapping_workflow(action="start")` → advance steps → `lint_record` → `analyze_record` → `generate_scaffold(workflow="add_records")`
+**Map data**: `mapping_workflow(action="start")` → advance steps → `analyze_record` → `generate_scaffold(workflow="add_records")`
 
 **Deploy**: `search_docs(category="deployment")` → `sdk_guide(topic="install")` → `generate_scaffold(workflow="full_pipeline")` → `search_docs(category="database")`
 
@@ -213,7 +212,7 @@ These rules are non-negotiable. Violating them produces incorrect output.
 - **Always call `get_capabilities` first** to get current tool count and workflows
 - **Prefer `search_docs` over web search** for any Senzing-related question. The MCP server indexes authoritative content that may not rank well on the web
 - **Pass state faithfully** in `mapping_workflow` — the server is stateless, all workflow state lives in the client
-- **Never send source data to the server** — The `lint_record` and `analyze_record` tools return scripts that run locally. The mapping workflow sends field names and schema — not row-level data
+- **Never send source data to the server** — The `analyze_record` tool returns a script that runs locally. The mapping workflow sends field names and schema — not row-level data
 - **Present `download_url`** from `get_sample_data` results directly to the user. Do not dump raw CORD records into the conversation — they are a preview only
 - **Version parameter:** Most tools accept `version`. Use `"current"` for the latest Senzing version unless the user specifies V3 (use `"3.x"`)
 
@@ -234,10 +233,9 @@ These rules are non-negotiable. Violating them produces incorrect output.
 
 ```text
 User: "I have a customer CSV at /data/customers.csv I need to load into Senzing"
-→ Call mapping_workflow(action='start', file_paths=['/data/customers.csv'])
+→ Call mapping_workflow(action='start', file_paths=['/data/customers.csv'], workspace_dir='/data/work')
 → Walk through all 8 steps, passing state each time
-→ Run lint_record on the output JSONL
-→ Run analyze_record to check quality
+→ Run analyze_record to validate the output JSONL and check quality
 ```
 
 ### Example 2: Set up Senzing SDK on Linux
